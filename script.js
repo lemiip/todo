@@ -2,32 +2,38 @@ const input=document.getElementById("addInput");
 const form=document.getElementById("addForm");
 const ol=document.querySelector("ol");
 const clearAll=document.getElementById("clearButton");
-// let count=1;
+let todo=[];
 function addTodo (){
     const newTodo=input.value.trim();
     if(newTodo=== "" ){
-        console.log("Please,enter something!")
-    }else{
-        const li=document.createElement("li");
-        li.textContent=newTodo;
-        li.className="md:w-[350px] border-1 border-emerald-500 rounded-xl flex justify-between m-1 h-[45px] py-2 px-3";
-        const icon=document.createElement("div")
-        icon.innerHTML+=`
-            <i class="fa-solid -my-3 p-3 fa-trash h-[40px] cursor-pointer w-[40px] bg-emerald-500 rounded-xl text-white"></i>
-        
-        `
-        li.appendChild(icon);
-        ol.appendChild(li);
-        icon.addEventListener("click",()=>{
-            li.remove();
-        })
-        // count++;
-        input.value="";
-        
+        alert("Please,enter something!");
+        return;
     }
-    
+    if(todo.includes(newTodo)){
+        alert("It's already added");
+        return;
+    }
+    todo.push(newTodo);
+    localStorage.setItem("todo",JSON.stringify(todo));
+    Todo(newTodo);
+    input.value="";
     
 }
+function Todo(newTodo){
+    ol.innerHTML+=`
+         <li class="bg-[#C6E1E6] border-l-5 border-1 border-emerald-500 p-[7px] rounded-[10px] flex justify-between items-center">${newTodo}<div onclick="remove(this,'${newTodo}')"><i class="fa-solid fa-trash text-emerald-500 cursor-pointer "></i></div> </li>
+        `
+}
+
+window.addEventListener("DOMContentLoaded",()=>{
+    const data=JSON.parse(localStorage.getItem("todo"));
+        todo=data
+        todo.forEach(element => {
+            Todo(element);
+        });
+
+
+})
 form.addEventListener("submit",(e)=>{
     e.preventDefault();
     addTodo();
@@ -35,6 +41,13 @@ form.addEventListener("submit",(e)=>{
 
 clearAll.addEventListener("click",()=>{
     ol.innerHTML=""
+    todo=[];
+    localStorage.setItem("todo",JSON.stringify(todo));
 })
 
-    
+function remove(element,value){
+    element.parentElement.remove();
+    todo=todo.filter(e=>e!==value)
+    console.log(todo)
+    localStorage.setItem("todo",JSON.stringify(todo));
+}
